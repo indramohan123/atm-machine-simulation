@@ -1,0 +1,129 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+class UserAccount {
+    private String accountNumber;
+    private String pin;
+    private double balance;
+
+    public UserAccount(String accountNumber, String pin, double initialBalance) {
+        this.accountNumber = accountNumber;
+        this.pin = pin;
+        this.balance = initialBalance;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public boolean validatePin(String enteredPin) {
+        return pin.equals(enteredPin);
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("Deposit successful. Current balance: $" + balance);
+        } else {
+            System.out.println("Invalid deposit amount");
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println("Withdrawal successful. Current balance: $" + balance);
+        } else {
+            System.out.println("Invalid withdrawal amount or insufficient funds");
+        }
+    }
+}
+
+class ATMSimulation {
+    private Map<String, UserAccount> accounts;
+
+    public ATMSimulation() {
+        accounts = new HashMap<>();
+        // Initialize some dummy accounts for testing
+        accounts.put("123456", new UserAccount("123456", "1234", 1000.0));
+        accounts.put("789012", new UserAccount("789012", "5678", 500.0));
+    }
+
+    public void displayMenu() {
+        System.out.println("ATM Simulation System");
+        System.out.println("1. Balance Inquiry");
+        System.out.println("2. Deposit");
+        System.out.println("3. Withdrawal");
+        System.out.println("4. Exit");
+    }
+
+    public void startSimulation() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            displayMenu();
+            System.out.print("Enter your account number: ");
+            String accountNumber = scanner.nextLine();
+
+            if (!accounts.containsKey(accountNumber)) {
+                System.out.println("Invalid account number. Please try again.");
+                continue;
+            }
+
+            System.out.print("Enter your PIN: ");
+            String enteredPin = scanner.nextLine();
+
+            UserAccount userAccount = accounts.get(accountNumber);
+            if (!userAccount.validatePin(enteredPin)) {
+                System.out.println("Invalid PIN. Please try again.");
+                continue;
+            }
+
+            int choice;
+            do {
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+                scanner.nextLine();  // Consume the newline character
+
+                switch (choice) {
+                    case 1:
+                        System.out.println("Balance: $" + userAccount.getBalance());
+                        break;
+                    case 2:
+                        System.out.print("Enter deposit amount: $");
+                        double depositAmount = scanner.nextDouble();
+                        scanner.nextLine();  // Consume the newline character
+                        userAccount.deposit(depositAmount);
+                        break;
+                    case 3:
+                        System.out.print("Enter withdrawal amount: $");
+                        double withdrawalAmount = scanner.nextDouble();
+                        scanner.nextLine();  // Consume the newline character
+                        userAccount.withdraw(withdrawalAmount);
+                        break;
+                    case 4:
+                        System.out.println("Exiting ATM Simulation. Thank you!");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please enter a valid option.");
+                }
+            } while (choice != 4);
+
+            break;  // Exit the loop after one successful session
+        }
+
+        scanner.close();
+    }
+}
+
+public class ATMSystem {
+    public static void main(String[] args) {
+        ATMSimulation atmSimulation = new ATMSimulation();
+        atmSimulation.startSimulation();
+    }
+}
